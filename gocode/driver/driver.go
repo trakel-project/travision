@@ -21,7 +21,7 @@ var contractABI = contract.ABI
 var methodName = []string{"tsTotalNumOfDriver", "tsDriverInfo"}
 var testAccount = "0x38ba6f023d4a600f8a1cc566bba49190f3d8467e"
 var hrpc *rpc.Rpc
-var driverState = []string{"挂起", "已抢单", "待接客", "行程中"}
+var driverState = []string{"接单中", "已抢单", "待接客", "行程中"}
 var driverWorkingState = []string{"休息中", "接单中"}
 
 const (
