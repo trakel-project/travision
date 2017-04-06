@@ -1,0 +1,130 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "RO5Un3OFEK+GRiXrr8IBoRvkUIE=",
+			"path": "git.hyperchain.cn/yeyc/hyperkit/abi",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "94tkxz+cwY0r3KoUcIirxLKB5v8=",
+			"path": "git.hyperchain.cn/yeyc/hyperkit/rpc",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "2otmKRoQSKacroMbiWkrnUCr0JI=",
+			"path": "github.com/astaxie/beego",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "YNG2jEVIFD/0lKglDH3HkXBA1oo=",
+			"path": "github.com/astaxie/beego/config",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "wd4Mf8As2xBLT+/Q41fcqnN9kLs=",
+			"path": "github.com/astaxie/beego/context",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "O2+lFXZZioy6VFEAmId67eyVKWo=",
+			"path": "github.com/astaxie/beego/grace",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "cNkTEA618ZjfoGplBhuLzXrNIWg=",
+			"path": "github.com/astaxie/beego/logs",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "K5wG01CX2TKm+a+qKYxdfotSTKM=",
+			"path": "github.com/astaxie/beego/session",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "pP5Hj63keKtOQWl/3fyoF0TxeDk=",
+			"path": "github.com/astaxie/beego/toolbox",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "epd3Y7nD7QVzTW0ppwK+q4pKo/4=",
+			"path": "github.com/astaxie/beego/utils",
+			"revision": "323a1c4214101331a4b71922c23d19b7409ac71f",
+			"revisionTime": "2017-03-06T13:59:04Z"
+		},
+		{
+			"checksumSHA1": "snN/OV3cuAsy6elIlVL4Ld9FAcI=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/common",
+			"path": "github.com/ethereum/go-ethereum/common",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "Y3+ddp06Jhn9HZs/ZkSr737wJMM=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/common/hexutil",
+			"path": "github.com/ethereum/go-ethereum/common/hexutil",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "TPEk+jUCJyhYjwLyiOVJ6RFZavY=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/crypto",
+			"path": "github.com/ethereum/go-ethereum/crypto",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "h4CgslDNjrwHzgYPQrsUx8su2Kg=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/crypto/ecies",
+			"path": "github.com/ethereum/go-ethereum/crypto/ecies",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "W0XLNKJu61SBJW5LfVR3tG+U7ro=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/crypto/randentropy",
+			"path": "github.com/ethereum/go-ethereum/crypto/randentropy",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "THwPIN85mYaDBac+KL+lddWsUcc=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/crypto/secp256k1",
+			"path": "github.com/ethereum/go-ethereum/crypto/secp256k1",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "Lf/Hqgd6WaiNTZTTsX6mBK/Vy3c=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/crypto/sha3",
+			"path": "github.com/ethereum/go-ethereum/crypto/sha3",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "CLV9o8fFTGP5+XEtowD5Gjld3eE=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/github.com/ethereum/go-ethereum/rlp",
+			"path": "github.com/ethereum/go-ethereum/rlp",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		},
+		{
+			"checksumSHA1": "y/oIaxq2d3WPizRZfVjo8RCRYTU=",
+			"origin": "git.hyperchain.cn/yeyc/hyperkit/vendor/golang.org/x/crypto/ripemd160",
+			"path": "golang.org/x/crypto/ripemd160",
+			"revision": "36010194e3b4b417a128089ef654a435d6d549f6",
+			"revisionTime": "2017-01-13T06:16:29Z"
+		}
+	],
+	"rootPath": "travision"
+}
