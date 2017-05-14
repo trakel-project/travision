@@ -10,8 +10,8 @@ import (
 
 func main() {
 	updataOrders()
-	// updataRecord()
-	// updataDriver()
+	updataRecord()
+	updataDriver()
 }
 
 // Example for update order data from contract to local file

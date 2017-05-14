@@ -136,16 +136,16 @@ func (c *Container) Print(idx uint64) {
 	fmt.Printf("经度: %f\n", c.Data[idx].CorX)
 	fmt.Printf("纬度: %f\n", c.Data[idx].CorY)
 	if c.Data[idx].IsWorking != 0 {
-		fmt.Printf("状态: 接单中 %s\n", driverState[c.Data[idx].State])
+		fmt.Printf("状态: %s\n", driverState[c.Data[idx].State])
 	} else {
-		fmt.Printf("状态: 休息中 %s\n", driverState[c.Data[idx].State])
+		fmt.Printf("状态: %s\n", driverState[c.Data[idx].State])
 	}
 	fmt.Printf("地址: %s\n", c.Data[idx].Name)
 	fmt.Printf("姓名: %s\n", c.Data[idx].Info0)
 	fmt.Printf("车牌: %s\n", c.Data[idx].Info1)
 	fmt.Printf("车型: %s\n", c.Data[idx].Info2)
 	fmt.Printf("总单数: %d\n", c.Data[idx].TotalJudge)
-	fmt.Printf("平均分: %d\n", c.Data[idx].AverageScore)
+	fmt.Printf("平均分: %.2f\n", float32(c.Data[idx].AverageScore/1000))
 	fmt.Println("--------------------------------------")
 }
 

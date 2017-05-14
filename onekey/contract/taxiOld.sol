@@ -1,12 +1,13 @@
-// Version 0.6.1
-// 第一次重构，使用modifier来简化代码
+// Version 0.5
 pragma solidity ^0.4.6;
 
 contract CarCoin 
 {
-	address owner;
-    address taxi;
     mapping (address => int) balances;
+    address owner;
+    address taxi;
+    bool flag;
+    uint counter;
 
 	struct record 
 	{
@@ -15,29 +16,14 @@ contract CarCoin
 		int value;
 		string comment;
 	}    
-	uint counter;
     mapping (uint => record) records;
-
-	modifier onlyTaxi() {
-		if (msg.sender != taxi) throw;
-		_;
-	}
-
-	modifier onlyOwner() {
-		if (msg.sender != owner) throw;
-		_;
-	}
 
     function CarCoin() 
     {
         owner = msg.sender;
         balances[owner] = 100000000000;
+        flag = true;
         counter = 1;
-    }
-
-    function exeOnce(address addr) onlyOwner
-    {
-        taxi = addr;
     }
 
     function Transfer(address from, address to, int value, string comment) private
@@ -47,6 +33,15 @@ contract CarCoin
     	records[counter].value = value;
     	records[counter].comment = comment;
     	counter++;
+    }
+
+    function exeOnce(address addr)
+    {
+        if (flag)
+        {
+            taxi = addr;
+        }
+        //flag = false; 测试时注释
     }
 
     function getBalance(address addr) returns(int) 
@@ -59,16 +54,38 @@ contract CarCoin
         return owner;
     }
 
-    function prepay(address client, int preFee) onlyTaxi returns(bool success) 
+    function verify() returns(address a, address b, address c)
+    {
+        a = msg.sender;
+        b = taxi;
+        c = owner;
+    }
+
+    function verify1() returns(address)
+    {
+    	return msg.sender;
+    }
+
+    function prepay(address client, int preFee) returns(bool success) 
     {   
+        if (msg.sender != taxi)
+        {
+            return false;
+        }
+
         balances[client] -= preFee;
         balances[owner] += preFee;
         Transfer(client, this, preFee, "prepay");
         return true;
     }
     
-    function confirm(address client, address driver, int preFee, int finalFee) onlyTaxi returns(bool success) 
+    function confirm(address client, address driver, int preFee, int finalFee)  returns(bool success) 
     {   
+        if (msg.sender != taxi)
+        {
+            return false;
+        }
+
         int remain = preFee - finalFee;
         balances[owner] -= preFee;
         balances[client] += remain;
@@ -78,19 +95,28 @@ contract CarCoin
         return true;
     }
 
-    function penalty(address from, address to, int amount) onlyTaxi returns(bool)
+    function penalty(address from, address to, int amount) returns(bool)
     {
+        if (msg.sender != taxi)
+        {
+            return false;
+        }
+
         balances[from] -= amount;
         balances[to] += amount;
     }
 
 
-    function recharge(address addr, int amount) onlyOwner returns(bool)
+    function recharge(address addr, int amount) returns(bool)
     {
-        if (balances[owner] < amount)
+        if (msg.sender != owner)
         {
             return false;
         }
+        // if (balances[owner] < amount)
+        // {
+        //     return false;
+        // }
         balances[addr] += amount;
         balances[owner] -= amount;
         Transfer(this, addr, amount, "recharge");
@@ -113,23 +139,15 @@ contract CarCoin
     	return counter;
     }
 
-    function verify() returns(address)
-    {
-    	return msg.sender;
-    }
 }
 
 contract Taxi
 {
 	CarCoin carcoin;
-	address owner;
 	
 	mapping (address => uint) passengerToOrder;	//每个乘客对应到某个订单
 	mapping (address => uint) driverToOrder;	//每个司机对应到某个订单
-	mapping (address => uint) passengerStates;  //乘客状态
-	mapping (address => uint) driverStates;		//司机状态
-	mapping (address => uint[5]) passengerNearDrivers; //附近的司机
-	
+	uint counterOrderIndex;						//下一个空的订单序号
 	//订单需要的信息
 	struct Order
 	{
@@ -144,20 +162,18 @@ contract Taxi
 		string dName;			//终点地名
 		int distance;			//起终点直线距离
 		int preFee;				//预付款额
-		int actFee;				//里程费
-		int actFeeTime;			//时长费
-		uint startTime; 		//订单提交时间 UNIX标准时间
-		uint pickTime;			//接客时间
-		uint endTime;			//结束时间
+		int actFee;				//实际款额
+		int actFeeTime;
+		uint startTime; 		//UNIX标准时间
+		uint pickTime;
+		uint endTime;			//UNIX标准时间
 		int state;				//订单状态 1待分配 2已被抢 3订单完成 4订单终止
-		string passInfo;		//乘客个人信息
-        string drivInfo0;		//司机个人信息
+		string passInfo;		//乘客个人信息，utf8
+        string drivInfo0;		//司机个人信息，utf8
         string drivInfo1;
         string drivInfo2;
 	}
-	uint counterOrderIndex;		//下一个空的订单序号
 	mapping (uint => Order) orders;
-
 
 	mapping (address => uint) driverIndexs; //给每个司机分配一个内部的序号
 	uint counterDriverIndex;				//下一个空的司机序号（当前司机数量+1）
@@ -178,6 +194,12 @@ contract Taxi
 	mapping (uint => Driver) drivers;		//使用序号去寻找司机的信息
 
 
+	mapping (address => uint) passengerStates;
+	mapping (address => uint) driverStates;
+
+
+	mapping (address => uint[5]) passengerNearDrivers;
+
 	struct Judgement
 	{
 		int total;									//总评价数
@@ -185,6 +207,8 @@ contract Taxi
 		mapping (int => int) score;					//单次分数
 		mapping (int => string) comment;			//单次评价
 	}
+
+	//mapping (address => Judgement) passengerJudgements;
 	mapping (address => Judgement) driverJudgements;
 
 	struct passengerPosition
@@ -193,9 +217,6 @@ contract Taxi
 		int y;
 	}
 	mapping (address => passengerPosition) passPos;
-
-
-
 
 	//里程单价 0.01币：0.1米 => 1km = 100块
 	int unitPrice = 1;
@@ -208,12 +229,6 @@ contract Taxi
 		counterDriverIndex = 1;
 		counterOrderIndex = 1;
 		carcoin = CarCoin(cc);
-		owner = msg.sender;
-	}
-
-	modifier onlyOwner() {
-		if (msg.sender != owner) throw;
-		_;
 	}
 
 	function sqrt(int x) private returns (int)
@@ -359,12 +374,18 @@ contract Taxi
 		}
 		orders[orderIndex].state = 2;
 		orders[orderIndex].driver = msg.sender;
+		//orders[orderIndex].drivInfo = drivers[driverIndexs[msg.sender]].info;
         orders[orderIndex].drivInfo0 = drivers[driverIndexs[msg.sender]].info0;
         orders[orderIndex].drivInfo1 = drivers[driverIndexs[msg.sender]].info1;
         orders[orderIndex].drivInfo2 = drivers[driverIndexs[msg.sender]].info2;
+
+		//passengerLinks[orders[orderIndex].passenger] = msg.sender;
+		//driverLinks[msg.sender] = orders[orderIndex].passenger;
+		
 		passengerStates[orders[orderIndex].passenger] = 2;		//乘客待付款
 		driverStates[msg.sender] = 1;							//司机已接单
 		driverToOrder[msg.sender] = orderIndex;
+
 		//初始化司机上一次位置
 		drivers[driverIndexs[msg.sender]].last_x = orders[orderIndex].s_x; 
 		drivers[driverIndexs[msg.sender]].last_y = orders[orderIndex].s_y;
@@ -389,6 +410,7 @@ contract Taxi
 			driverStates[driver] = 2;
 			return true;
 		}
+		//下面是支付失败的逻辑，或者是乘客取消订单的逻辑，目前没有处理，待加入，例如订单状态的改变等
 		else
 		{
 			//....
@@ -404,7 +426,6 @@ contract Taxi
 		uint orderIndex = driverToOrder[msg.sender];
 		address passenger = orders[orderIndex].passenger;
 
-		//状态检查
 		if (driverStates[msg.sender] != 2 || passengerStates[passenger] != 3 || orders[orderIndex].state != 2)
 		{
 			return false;
@@ -435,7 +456,6 @@ contract Taxi
 		int distance;
 		address passenger = orders[orderIndex].passenger;
 
-		//状态检查
 		if (driverStates[msg.sender] != 3 || passengerStates[passenger] != 4 || orders[orderIndex].state != 2)
 		{
 			return 0;
@@ -450,6 +470,51 @@ contract Taxi
 		drivers[driverindex].last_y = cur_y;
 		return orders[orderIndex].actFee;
 	}
+
+    function driverFinishOrderWithRoute(uint time, uint len, int[] x, int[] y) returns(int)
+    {
+        return x[3]-x[2];
+     // uint orderIndex = driverToOrder[msg.sender];
+     // address passenger = orders[orderIndex].passenger;
+     // //司机不是行程中，订单不是已被抢
+     // if (driverStates[msg.sender] != 3 || passengerStates[passenger] != 4 || orders[orderIndex].state != 2)
+     // {
+     //     return 0;
+     // }
+     // if (time < orders[orderIndex].pickTime)
+     // {
+     //     time = orders[orderIndex].pickTime;
+     //     //return 0;
+     // }
+     // orders[orderIndex].actFeeTime = (int)(time - orders[orderIndex].pickTime) * unitPriceTime;
+     // int preFee = orders[orderIndex].preFee;
+     // int finalFee = orders[orderIndex].actFee + orders[orderIndex].actFeeTime;
+     // if (finalFee > preFee)
+     // {
+     //     finalFee = preFee;
+     //     orders[orderIndex].actFee = finalFee - orders[orderIndex].actFeeTime;
+     // }
+
+     // //支付
+     // if (carcoin.confirm(passenger, msg.sender, preFee, finalFee))
+     // {
+     //     orders[orderIndex].state = 3;
+     //     orders[orderIndex].endTime = time;
+     //     passengerStates[passenger] = 0;
+     //     driverStates[msg.sender] = 0;
+     //     return y[0]-x[0];
+     // }
+     // //同上，若支付失败要怎么办
+     // else
+     // {
+     //     //....
+     //     passengerStates[passenger] = 0;
+     //     driverStates[msg.sender] = 0;
+     //     orders[orderIndex].state = 4;
+     //     return 0;
+     // }
+    }
+
 
 	function driverFinishOrder(uint time) returns(bool)
 	{
@@ -483,63 +548,6 @@ contract Taxi
 			driverStates[msg.sender] = 0;
 			return true;
 		}
-		else
-		{
-			//....
-			passengerStates[passenger] = 0;
-			driverStates[msg.sender] = 0;
-			orders[orderIndex].state = 4;
-			return false;
-		}
-	}
-
-	function calculateActFeeWithRoute(uint orderIndex, uint len, int[] x, int[] y) private
-	{
-		uint i;
-		int distance;
-		orders[orderIndex].distance = 0;
-		orders[orderIndex].actFee = 0;
-		for (i=0; i<len-1; i++)
-		{			
-			distance = calculateDistance(x[i], x[i+1], y[i], y[i+1]);
-			orders[orderIndex].distance += distance;
-			orders[orderIndex].actFee +=  distance * unitPrice / 100;
-		}
-	}
-
-    function driverFinishOrderWithRoute(uint time, uint len, int[] x, int[] y) returns(bool)
-    {
-		uint orderIndex = driverToOrder[msg.sender];
-		address passenger = orders[orderIndex].passenger;
-		//司机不是行程中，订单不是已被抢
-		if (driverStates[msg.sender] != 3 || passengerStates[passenger] != 4 || orders[orderIndex].state != 2)
-		{
-			return false;
-		}
-		if (time < orders[orderIndex].pickTime)
-		{
-			time = orders[orderIndex].pickTime;
-			//return 0;
-		}
-		calculateActFeeWithRoute(orderIndex, len, x, y);
-		orders[orderIndex].actFeeTime = (int)(time - orders[orderIndex].pickTime) * unitPriceTime;
-		int preFee = orders[orderIndex].preFee;
-		int finalFee = orders[orderIndex].actFee + orders[orderIndex].actFeeTime;
-		if (finalFee > preFee)
-		{
-			finalFee = preFee;
-			//orders[orderIndex].actFee = finalFee - orders[orderIndex].actFeeTime;
-		}
-
-		//支付
-		if (carcoin.confirm(passenger, msg.sender, preFee, finalFee))
-		{
-			orders[orderIndex].state = 3;
-			orders[orderIndex].endTime = time;
-			passengerStates[passenger] = 0;
-			driverStates[msg.sender] = 0;
-			return true;
-		}
 		//同上，若支付失败要怎么办
 		else
 		{
@@ -549,8 +557,7 @@ contract Taxi
 			orders[orderIndex].state = 4;
 			return false;
 		}
-    }
-
+	}
 
 	function getDriverState() returns(uint)
 	{
@@ -661,11 +668,6 @@ contract Taxi
 		pickTime = orders[orderIndex].pickTime;
 		endTime = orders[orderIndex].endTime;
 		state = orders[orderIndex].state;
-	}
-
-	function getOrderDriver(uint orderIndex) returns(address)
-	{
-		return orders[orderIndex].driver;
 	}
 
     function getOrderStateAndDriverPos(uint orderIndex) returns(int state, int x, int y)  
@@ -802,7 +804,6 @@ contract Taxi
 		return true;
 	}
 
-
 	function passengerCancelOrder(bool isPenalty) returns(bool) 
 	{
 		uint orderIndex = passengerToOrder[msg.sender];
@@ -852,7 +853,6 @@ contract Taxi
 		uint orderIndex = driverToOrder[msg.sender];
 		address passenger = orders[orderIndex].passenger;
 
-		//司机在乘客预付款前取消
 		if (driverStates[msg.sender] == 1 && passengerStates[passenger] == 2 && orders[orderIndex].state == 2)
 		{
 			passengerStates[passenger] = 0;
@@ -860,7 +860,7 @@ contract Taxi
 			orders[orderIndex].state = 4;
 			return true;
 		}
-		//司机在乘客预付款后取消，有违约金
+
 		if (driverStates[msg.sender] == 2 && passengerStates[passenger] == 3 && orders[orderIndex].state == 2)
 		{
 			//退还预付款
@@ -925,7 +925,7 @@ contract Taxi
 
 	function verify() returns(address)
 	{
-		return carcoin.verify();
+		return carcoin.verify1();
 	}
 
 	function updatePassengerPos(int x, int y) 
@@ -963,3 +963,6 @@ contract Taxi
 	}
 	
 }
+
+
+
